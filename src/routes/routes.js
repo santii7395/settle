@@ -1,3 +1,4 @@
+const Joi = require('joi');
 const { rates } = require('../handlers/handlers');
 
 module.exports = {
@@ -7,7 +8,27 @@ module.exports = {
         {
           method: 'GET',
           path: '/rates',
-          handler: rates
+          options: {
+            tags: ['api'], // ADD THIS TAG
+            handler: rates,
+            validate: {
+              query: Joi.object({
+                  fee: Joi.number()
+              })
+            },
+            response: {
+              status: {
+                200: Joi.array().items(Joi.object(
+                  {
+                    Pair: Joi.string(), 
+                    Original_Rate: Joi.number(), 
+                    Fee: Joi.number(), 
+                    Fee_amount: Joi.number(), 
+                    Rate_with_markup_fee: Joi.number()
+                  }).label('pair'))
+              }
+          }
+          }
         }
       ]);
     }
